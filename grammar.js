@@ -159,6 +159,8 @@ module.exports = grammar(C, {
       alias($.constructor_or_destructor_definition, $.function_definition),
       alias($.operator_cast_definition, $.function_definition),
       alias($.operator_cast_declaration, $.declaration),
+      $.macro_assignment,
+      $.absl_flag,
     ),
 
     ...preprocIf('', $ => $._top_level_item),
@@ -577,6 +579,7 @@ module.exports = grammar(C, {
       $._declaration_specifiers,
       commaSep(seq(
         field('declarator', $._field_declarator),
+        optional($.absl_attribute),
         optional(choice(
           $.bitfield_clause,
           field('default_value', $.initializer_list),
@@ -723,6 +726,7 @@ module.exports = grammar(C, {
       optional($._function_attributes_end),
       optional($.trailing_return_type),
       optional($._function_postfix),
+      repeat($.absl_attribute),
     ),
 
     _function_attributes_start: $ => prec(1, choice(
@@ -904,6 +908,8 @@ module.exports = grammar(C, {
       $.expansion_statement,
       $.try_statement,
       $.throw_statement,
+      $.macro_assignment,
+      $.absl_flag,
     ),
 
     _non_case_statement: ($, original) => choice(
@@ -914,6 +920,8 @@ module.exports = grammar(C, {
       $.expansion_statement,
       $.try_statement,
       $.throw_statement,
+      $.macro_assignment,
+      $.absl_flag,
     ),
 
     switch_statement: $ => seq(
@@ -1216,6 +1224,7 @@ module.exports = grammar(C, {
         repeat($.attribute_declaration),
         optional($.trailing_return_type),
         optional($.requires_clause),
+        repeat($.absl_attribute),
       ),
 
       // forms supporting omitted parameter list
@@ -1596,6 +1605,67 @@ module.exports = grammar(C, {
         $._string,
       ),
       $.literal_suffix,
+    ),
+
+    _macro_declarator: ($) => seq(
+      repeat($._declaration_modifiers),
+      field('type', $.type_specifier),
+      field('declarator', $._declarator),
+    ),
+
+    assignment_macro_name: ($) => choice('ASSIGN_OR_RETURN', 'ASSERT_OK_AND_ASSIGN', 'CO_ASSIGN_OR_RETURN'),
+
+    macro_assignment: ($) => seq(
+      field('macro', $.assignment_macro_name),
+      '(',
+      choice($._macro_declarator, $.expression),
+      ',',
+      commaSep($.expression),
+      ')',
+      ';'
+    ),
+
+    absl_flag_identifier: ($) => 'ABSL_FLAG',
+    absl_attribute_identifier: ($) => choice(
+      'ABSL_GUARDED_BY',
+      'ABSL_PT_GUARDED_BY',
+      'ABSL_EXCLUSIVE_LOCKS_REQUIRED',
+      'ABSL_SHARED_LOCKS_REQUIRED',
+      'ABSL_LOCKS_EXCLUDED',
+      'ABSL_LOCK_RETURNED',
+      'ABSL_DEPRECATED',
+    ),
+
+    absl_attribute_no_args_identifier: ($) => choice(
+      'ABSL_LOCKABLE',
+      'ABSL_SCOPED_LOCKABLE',
+      'ABSL_NO_THREAD_SAFETY_ANALYSIS',
+      'ABSL_MUST_USE_RESULT',
+      'ABSL_ATTRIBUTE_LIFETIME_BOUND',
+    ),
+
+    absl_flag: ($) => seq(
+      field('flag', $.absl_flag_identifier),
+      '(',
+      field('type', $.type_specifier),
+      ',',
+      field('name', $.identifier),
+      ',',
+      field('default_value', $.expression),
+      ',',
+      field('desc', $.expression),
+      ')',
+      ';'
+    ),
+
+    absl_attribute: $ => choice(
+      seq(
+        field('attribute', $.absl_attribute_identifier),
+        '(',
+        commaSep($.expression),
+        ')'
+      ),
+      field('attribute', $.absl_attribute_no_args_identifier)
     ),
 
     _namespace_identifier: $ => alias($.identifier, $.namespace_identifier),

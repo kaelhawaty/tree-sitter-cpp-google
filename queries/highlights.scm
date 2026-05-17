@@ -75,3 +75,9 @@
 ; Strings
 
 (raw_string_literal) @string
+
+; Google C++ Extensions
+(assignment_macro_name) @function.macro
+(absl_attribute_identifier) @function.macro
+(absl_attribute_no_args_identifier) @function.macro
+(absl_flag_identifier) @function.macro
