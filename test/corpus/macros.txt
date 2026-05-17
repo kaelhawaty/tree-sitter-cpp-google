@@ -1,0 +1,468 @@
+================================
+Assignment, no declaration
+================================
+
+ASSIGN_OR_RETURN(a, b);
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (identifier)
+    (identifier)))
+
+================================
+Assignment, declaration
+================================
+
+ASSIGN_OR_RETURN(int a, b);
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (primitive_type)
+    (identifier)
+    (identifier)))
+
+================================
+Assignment, expression
+================================
+
+ASSIGN_OR_RETURN(*a.Add(), b);
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (pointer_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (field_identifier))
+        (argument_list)))
+    (identifier)))
+
+================================
+Additional options
+================================
+
+ASSIGN_OR_RETURN(*a.Add(), b, _.Log() << "log message");
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (pointer_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (field_identifier))
+        (argument_list)))
+    (identifier)
+    (binary_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (field_identifier))
+        (argument_list))
+      (string_literal
+        (string_content)))))
+
+================================
+Assignment, type modifier
+================================
+
+ASSERT_OK_AND_ASSIGN(const int a, b(c));
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (type_qualifier)
+    (primitive_type)
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (identifier)))))
+
+================================
+ASSERT_OK_AND_ASSIGN variation
+================================
+
+ASSERT_OK_AND_ASSIGN(*a.Add(), b);
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (pointer_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (field_identifier))
+        (argument_list)))
+    (identifier)))
+
+================================
+Assignment in function
+================================
+
+void f() {
+  ASSIGN_OR_RETURN(int a, b);
+}
+
+---
+(translation_unit
+  (function_definition
+    (primitive_type)
+    (function_declarator
+      (identifier)
+      (parameter_list))
+    (compound_statement
+      (macro_assignment
+        (assignment_macro_name)
+        (primitive_type)
+        (identifier)
+        (identifier)))))
+
+================================
+Flag definition
+================================
+
+ABSL_FLAG(int, test, 0, "");
+
+---
+(translation_unit
+  (absl_flag
+    (absl_flag_identifier)
+    (primitive_type)
+    (identifier)
+    (number_literal)
+    (string_literal)))
+
+================================
+Flag definition, default value expression
+================================
+
+ABSL_FLAG(std::vector<int>, test, std::vector<int>{1,2,3}, "");
+
+---
+
+(translation_unit
+  (absl_flag
+    (absl_flag_identifier)
+    (qualified_identifier
+      (namespace_identifier)
+      (template_type
+        (type_identifier)
+        (template_argument_list
+          (type_descriptor
+            (primitive_type)))))
+    (identifier)
+    (compound_literal_expression
+      (qualified_identifier
+        (namespace_identifier)
+        (template_type
+          (type_identifier)
+          (template_argument_list
+            (type_descriptor
+              (primitive_type)))))
+      (initializer_list
+        (number_literal)
+        (number_literal)
+        (number_literal)))
+    (string_literal)))
+
+================================
+Function thread annotations
+================================
+
+class C {
+  void A() ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
+  void B() ABSL_SHARED_LOCKS_REQUIRED(mutex_);
+  void C() ABSL_LOCKS_EXCLUDED(mutex_);
+
+  absl::Mutex mutex_;
+};
+
+---
+
+(translation_unit
+  (class_specifier
+    (type_identifier)
+    (field_declaration_list
+      (field_declaration
+        (primitive_type)
+        (function_declarator
+          (field_identifier)
+          (parameter_list)
+          (absl_attribute
+            (absl_attribute_identifier)
+            (identifier))))
+      (field_declaration
+        (primitive_type)
+        (function_declarator
+          (field_identifier)
+          (parameter_list)
+          (absl_attribute
+            (absl_attribute_identifier)
+            (identifier))))
+      (field_declaration
+        (primitive_type)
+        (function_declarator
+          (field_identifier)
+          (parameter_list)
+          (absl_attribute
+            (absl_attribute_identifier)
+            (identifier))))
+      (field_declaration
+        (qualified_identifier
+          (namespace_identifier)
+          (type_identifier))
+        (field_identifier)))))
+
+================================
+Field thread annotations
+================================
+
+class C {
+  absl::Mutex mutex_;
+
+  int a_ ABSL_GUARDED_BY(mutex_);
+  int b_ ABSL_GUARDED_BY(mutex_) = 0;
+};
+
+---
+
+(translation_unit
+  (class_specifier
+    (type_identifier)
+    (field_declaration_list
+      (field_declaration
+        (qualified_identifier
+          (namespace_identifier)
+          (type_identifier))
+        (field_identifier))
+      (field_declaration
+        (primitive_type)
+        (field_identifier)
+        (absl_attribute
+          (absl_attribute_identifier)
+          (identifier)))
+      (field_declaration
+        (primitive_type)
+        (field_identifier)
+        (absl_attribute
+          (absl_attribute_identifier)
+          (identifier))
+        (number_literal)))))
+
+================================
+Lambda thread annotations
+================================
+
+auto l = []() ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
+  Test();
+};
+
+---
+
+(translation_unit
+  (declaration
+    (placeholder_type_specifier
+      (auto))
+    (init_declarator
+      (identifier)
+      (lambda_expression
+        (lambda_capture_specifier)
+        (lambda_declarator
+          (parameter_list)
+          (absl_attribute
+            (absl_attribute_identifier)
+            (identifier)))
+        (compound_statement
+          (expression_statement
+            (call_expression
+              (identifier)
+              (argument_list))))))))
+
+================================
+Pointer thread annotations
+================================
+
+class C {
+  int* a_ ABSL_PT_GUARDED_BY(mutex_);
+};
+
+---
+
+(translation_unit
+  (class_specifier
+    (type_identifier)
+    (field_declaration_list
+      (field_declaration
+        (primitive_type)
+        (pointer_declarator
+          (field_identifier))
+        (absl_attribute
+          (absl_attribute_identifier)
+          (identifier))))))
+
+================================
+No-argument thread annotations
+================================
+
+void f() ABSL_NO_THREAD_SAFETY_ANALYSIS {}
+
+---
+
+(translation_unit
+  (function_definition
+    (primitive_type)
+    (function_declarator
+      (identifier)
+      (parameter_list)
+      (absl_attribute
+        (absl_attribute_no_args_identifier)))
+    (compound_statement)))
+
+================================
+Coroutine Assignment
+================================
+
+CO_ASSIGN_OR_RETURN(auto a, b);
+
+---
+
+(translation_unit
+  (macro_assignment
+    (assignment_macro_name)
+    (placeholder_type_specifier
+      (auto))
+    (identifier)
+    (identifier)))
+
+================================
+Deprecation attribute (String argument)
+================================
+
+void f() ABSL_DEPRECATED("use bar");
+
+---
+
+(translation_unit
+  (declaration
+    (primitive_type)
+    (function_declarator
+      (identifier)
+      (parameter_list)
+      (absl_attribute
+        (absl_attribute_identifier)
+        (string_literal
+          (string_content))))))
+
+================================
+Stacked attributes
+================================
+
+void f() ABSL_MUST_USE_RESULT ABSL_NO_THREAD_SAFETY_ANALYSIS {}
+
+---
+
+(translation_unit
+  (function_definition
+    (primitive_type)
+    (function_declarator
+      (identifier)
+      (parameter_list)
+      (absl_attribute
+        (absl_attribute_no_args_identifier))
+      (absl_attribute
+        (absl_attribute_no_args_identifier)))
+    (compound_statement)))
+
+================================
+Complex Multi-argument thread annotations
+================================
+
+void f() ABSL_EXCLUSIVE_LOCKS_REQUIRED(&mutex_, this->other_mutex_);
+
+---
+
+(translation_unit
+  (declaration
+    (primitive_type)
+    (function_declarator
+      (identifier)
+      (parameter_list)
+      (absl_attribute
+        (absl_attribute_identifier)
+        (pointer_expression
+          (identifier))
+        (field_expression
+          (this)
+          (field_identifier))))))
+
+================================
+Front declaration attribute (Before return type)
+================================
+
+ABSL_MUST_USE_RESULT vector<int> f();
+
+---
+
+(translation_unit
+  (declaration
+    (absl_attribute
+      (absl_attribute_no_args_identifier))
+    (template_type
+      (type_identifier)
+      (template_argument_list
+        (type_descriptor
+          (primitive_type))))
+    (function_declarator
+      (identifier)
+      (parameter_list))))
+
+================================
+Front attribute with auto return type
+================================
+
+ABSL_MUST_USE_RESULT auto f();
+
+---
+
+(translation_unit
+  (declaration
+    (absl_attribute
+      (absl_attribute_no_args_identifier))
+    (placeholder_type_specifier
+      (auto))
+    (function_declarator
+      (identifier)
+      (parameter_list))))
+
+================================
+Abseil retired flag definition
+================================
+
+ABSL_RETIRED_FLAG(int, my_flag, 42, "desc");
+
+---
+
+(translation_unit
+  (absl_flag
+    flag: (absl_flag_identifier)
+    type: (primitive_type)
+    name: (identifier)
+    default_value: (number_literal)
+    desc: (string_literal
+      (string_content))))

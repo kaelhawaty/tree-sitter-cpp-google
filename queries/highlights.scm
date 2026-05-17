@@ -75,3 +75,15 @@
 ; Strings
 
 (raw_string_literal) @string
+
+; Google C++ Extensions
+(assignment_macro_name) @function.macro
+(absl_attribute_identifier) @function.macro
+(absl_attribute_no_args_identifier) @function.macro
+(absl_flag_identifier) @function.macro
+
+;; 5. Match all uppercase function-like calls as macros (like LOG, DCHECK, RETURN_IF_ERROR)
+((call_expression
+  function: (identifier) @function.macro)
+ (#match? @function.macro "^[A-Z_][A-Z0-9_]+$"))
+
