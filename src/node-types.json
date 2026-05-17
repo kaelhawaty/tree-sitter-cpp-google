@@ -334,6 +334,10 @@
     "named": true,
     "subtypes": [
       {
+        "type": "absl_flag",
+        "named": true
+      },
+      {
         "type": "attributed_statement",
         "named": true
       },
@@ -391,6 +395,10 @@
       },
       {
         "type": "labeled_statement",
+        "named": true
+      },
+      {
+        "type": "macro_assignment",
         "named": true
       },
       {
@@ -482,6 +490,102 @@
     ]
   },
   {
+    "type": "absl_attribute",
+    "named": true,
+    "fields": {
+      "attribute": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "absl_attribute_identifier",
+            "named": true
+          },
+          {
+            "type": "absl_attribute_no_args_identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "absl_attribute_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "absl_attribute_no_args_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "absl_flag",
+    "named": true,
+    "fields": {
+      "default_value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "desc": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "flag": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "absl_flag_identifier",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_specifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "abstract_array_declarator",
     "named": true,
     "fields": {
@@ -550,6 +654,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "absl_attribute",
+          "named": true
+        },
         {
           "type": "attribute_declaration",
           "named": true
@@ -914,6 +1022,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "assignment_macro_name",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "attribute",
@@ -1294,6 +1407,10 @@
       "required": false,
       "types": [
         {
+          "type": "absl_flag",
+          "named": true
+        },
+        {
           "type": "attributed_statement",
           "named": true
         },
@@ -1351,6 +1468,10 @@
         },
         {
           "type": "labeled_statement",
+          "named": true
+        },
+        {
+          "type": "macro_assignment",
           "named": true
         },
         {
@@ -2886,6 +3007,10 @@
       "required": false,
       "types": [
         {
+          "type": "absl_attribute",
+          "named": true
+        },
+        {
           "type": "attribute_declaration",
           "named": true
         },
@@ -3528,6 +3653,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "absl_attribute",
+          "named": true
+        },
         {
           "type": "attribute_declaration",
           "named": true
@@ -4259,6 +4388,10 @@
       "required": false,
       "types": [
         {
+          "type": "absl_attribute",
+          "named": true
+        },
+        {
           "type": "attribute_declaration",
           "named": true
         },
@@ -4383,6 +4516,72 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "macro_assignment",
+    "named": true,
+    "fields": {
+      "declarator": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "_declarator",
+            "named": true
+          }
+        ]
+      },
+      "macro": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "assignment_macro_name",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type_specifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "attribute_declaration",
+          "named": true
+        },
+        {
+          "type": "attribute_specifier",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "ms_declspec_modifier",
+          "named": true
+        },
+        {
+          "type": "storage_class_specifier",
+          "named": true
+        },
+        {
+          "type": "type_qualifier",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -7260,6 +7459,10 @@
       "required": false,
       "types": [
         {
+          "type": "absl_flag",
+          "named": true
+        },
+        {
           "type": "alias_declaration",
           "named": true
         },
@@ -7353,6 +7556,10 @@
         },
         {
           "type": "linkage_specification",
+          "named": true
+        },
+        {
+          "type": "macro_assignment",
           "named": true
         },
         {
@@ -8157,6 +8364,66 @@
     "named": false
   },
   {
+    "type": "ABSL_ATTRIBUTE_LIFETIME_BOUND",
+    "named": false
+  },
+  {
+    "type": "ABSL_DEPRECATED",
+    "named": false
+  },
+  {
+    "type": "ABSL_EXCLUSIVE_LOCKS_REQUIRED",
+    "named": false
+  },
+  {
+    "type": "ABSL_GUARDED_BY",
+    "named": false
+  },
+  {
+    "type": "ABSL_LOCKABLE",
+    "named": false
+  },
+  {
+    "type": "ABSL_LOCKS_EXCLUDED",
+    "named": false
+  },
+  {
+    "type": "ABSL_LOCK_RETURNED",
+    "named": false
+  },
+  {
+    "type": "ABSL_MUST_USE_RESULT",
+    "named": false
+  },
+  {
+    "type": "ABSL_NO_THREAD_SAFETY_ANALYSIS",
+    "named": false
+  },
+  {
+    "type": "ABSL_PT_GUARDED_BY",
+    "named": false
+  },
+  {
+    "type": "ABSL_SCOPED_LOCKABLE",
+    "named": false
+  },
+  {
+    "type": "ABSL_SHARED_LOCKS_REQUIRED",
+    "named": false
+  },
+  {
+    "type": "ASSERT_OK_AND_ASSIGN",
+    "named": false
+  },
+  {
+    "type": "ASSIGN_OR_RETURN",
+    "named": false
+  },
+  {
+    "type": "CO_ASSIGN_OR_RETURN",
+    "named": false
+  },
+  {
     "type": "L\"",
     "named": false
   },
@@ -8359,6 +8626,10 @@
   {
     "type": "_unaligned",
     "named": false
+  },
+  {
+    "type": "absl_flag_identifier",
+    "named": true
   },
   {
     "type": "alignas",
